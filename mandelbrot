@@ -39,7 +39,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
         // Check if Z is greater than 2 units from the origin
         if (dot(Z, Z) > 4.0) {
             // A representation of how long it took to escape to infinity
-            float brightness = float(i) / float(maxIterations);
+            float brightness = (
+                float(i) 
+                - log2(log2(dot(Z, Z)))  // Smoother scaling to prevent banding
+                + 4.0 // Determines spread
+            ) / float(maxIterations);
             
             // Weights for RGB values
             vec3 weights = vec3(10.0, 40.0, 60.0);
