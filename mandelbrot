@@ -1,0 +1,55 @@
+// Compute square for a complex number
+vec2 zSquare(in vec2 z)
+{
+    return vec2(
+        z.x * z.x - z.y * z.y,
+        2.0 * z.x * z.y
+    );
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    // Normalized pixel coordinates (from 0 to 1)
+    vec2 c = fragCoord/iResolution.x;
+    
+    // Scale (lower is more zoomed in)
+    float scale = 7.6;
+    
+    // Scale c
+    c *= scale;
+    
+    // Move c into view
+    c -= vec2(3.6, 2.15);
+    
+    // Total number of iterations to determine if coord is in mandelbrot set
+    int maxIterations = 256;
+    
+    // Starting point for Z
+    vec2 Z = vec2(0.0, 0.0);
+    
+    
+    for (int i = 0; i < maxIterations; i++)
+    {
+  
+        vec2 oldZ = Z;
+        
+        // Calculate next sequence
+        Z = zSquare(Z) + c;
+        
+        // Check if Z is greater than 2 units from the origin
+        if (dot(Z, Z) > 4.0) {
+            // A representation of how long it took to escape to infinity
+            float brightness = float(i) / float(maxIterations);
+            
+            // Weights for RGB values
+            vec3 weights = vec3(10.0, 40.0, 60.0);
+            
+            // Color the pixel
+            fragColor = vec4(vec3(brightness) * weights, 1.0);
+            break;
+        } else {
+            fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        }
+    }
+    
+}
